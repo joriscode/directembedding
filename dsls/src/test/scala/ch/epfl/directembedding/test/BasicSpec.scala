@@ -109,4 +109,12 @@ class BasicSpec extends FlatSpec with ShouldMatchers {
         new ClassExample
       }) should be(List(ClassCons))
   }
+
+  "lift" should "work with TArgClassExample methods with app curry" in {
+    testReify(implicit collec =>
+      lift {
+        new TArgClassExample[Int].app[Int](1)(2)
+      }) should be(1) //(List(AppCurry[Int](Const(1))(Const(2))))
+  }
+
 }

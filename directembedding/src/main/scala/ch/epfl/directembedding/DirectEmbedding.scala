@@ -58,11 +58,16 @@ protected[directembedding] object Macros {
 
       override def transform(tree: Tree): Tree = {
         tree match {
-          case field @ Apply(Select(New(newBody), selectY1), applyY1) =>
+          case Apply(Select(New(newBody), selectY1), applyY1) =>
             reify(newBody.symbol, None, None)
 
           case Apply(TypeApply(x, targs), args) =>
             reify(x.symbol, Some(targs.map(transform(_))), Some(args.map(transform(_))))
+
+          case Apply(Apply(TypeApply(xxx, tpe), arg2), arg1) => // currying
+            val args = arg1 // should also take arg2
+            reify(xxx.symbol, Some(tpe), Some(args.map(transform(_))))
+            tree // just to make it compile
 
           case Apply(x, args) =>
             reify(x.symbol, None, Some(args.map(transform(_))))
